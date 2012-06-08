@@ -1,4 +1,6 @@
 #include <emmintrin.h>
+#include <xmmintrin.h>
+#include <smmintrin.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -60,6 +62,17 @@ void print_epu64(const __m128i m) {
   printf ("\n" );
 }
 
+void print_ps(const __m128 m) {
+  float a[4];
+  _mm_store_ps(a, m);
+
+  for (int i = 0; i < 4; ++i) {
+    printf( "%.3f ", a[i] );
+  }
+
+  printf ("\n" );
+}
+
 
 
 int main() {
@@ -88,6 +101,12 @@ int main() {
     __m128i r_ = _mm_add_epi32(a_, a_);
 
     print_epu32(r_);
+
+    printf( "extracting 3rd value 32-bit values\n" );
+    /** 2nd parameter is 0-based index. Should print 200 here **/
+    uint32_t k = _mm_extract_epi32(r_, 2);
+    printf( "3rd 32-bit value : %u\n", k );
+ 
   }
 
   {
@@ -98,6 +117,21 @@ int main() {
     __m128i r_ = _mm_add_epi64(a_, a_);
 
     print_epu64(r_);
+
+    printf( "extracting 2nd value 64-bit values\n" );
+    /** 2nd parameter is 0-based index. Should print 200 here **/
+    uint64_t k = _mm_extract_epi64(r_, 0);
+    printf( "2nd 64-bit value : %llu\n", k );
+  }
+
+  {
+    printf( "adding scalar values\n" );
+
+    const float a[] = {4.0, 2.0, 3.0, 1.0};
+
+    __m128 a_ = _mm_load_ps(a);
+    __m128 r_ = _mm_add_ps(a_, a_);
+    print_ps(r_);
   }
 
 }
