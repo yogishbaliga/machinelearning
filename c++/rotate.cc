@@ -4,9 +4,11 @@
 
 void rotate(const uint32_t *in, uint32_t *out) {
 
+  const int cyclic_shift = _MM_SHUFFLE(0, 3, 2, 1);
 
   __m128i a_ = _mm_loadu_si128((__m128i *) in);
-  a_ = _mm_shuffle_epi32(a_, _MM_SHUFFLE(0, 3, 2, 1));
+  // a_ = _mm_shuffle_epi32(a_, _MM_SHUFFLE(0, 3, 2, 1));
+  a_ = _mm_shuffle_epi32(a_, cyclic_shift);
   _mm_storeu_si128((__m128i *) out, a_);
 }
 
