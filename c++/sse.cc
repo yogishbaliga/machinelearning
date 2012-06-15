@@ -134,4 +134,10 @@ int main() {
     print_ps(r_);
   }
 
+  {
+    printf( "counting number of 1-bits\n" );
+    uint64_t x = _mm_popcnt_u64(82993884UL);
+    printf( "total number of bits set : %llu\n", x );
+  }
+
 }
