@@ -1,4 +1,8 @@
 from math import sqrt
+import sys
+sys.path.append('../lib/tweepy')
+
+import tweepy
 
 critics={'Lisa Rose': {'Lady in the Water': 2.5, 'Snakes on a Plane': 3.5,
       'Just My Luck': 3.0, 'Superman Returns': 3.5, 'You, Me and Dupree': 2.5,
