@@ -12,19 +12,43 @@ def __assert_environ(key):
   else:
     return os.environ[key]
 
+def read_twitter_data(filename):
+  f = open(filename, "r")
+  i = 0
+  d = {}
+  all_words = {}
+  for line in f:
+    if i > 500:
+      break
+    i = i + 1
+    try:
+      screen_name, ts, uid, text = line.split("\t", 3)
+      u = str(uid)
+      d.setdefault(u, {})
+      for x in text.split(" "):
+        d[u][x] = 1.0
+        all_words.setdefault(x, 0)
+    except Exception as e:
+      # ignore error
+      pass
+
+#  for k,y in d.items():
+#    for a in all_words.keys():
+#      if not a in y:
+#        y[a] = 0.0
+
+  return d
+  
 class TweetListener(tweepy.streaming.StreamListener):
 
   def __init__(self):
     super(self.__class__, self).__init__()
-    sys.stdout.flush()
     return
 
   def on_status(self, status):
-    sys.stdout.flush()
     try:
       if status.user.lang == 'en':
-        print "%s\t%s" % (status.user.id, status.text)
-      #print '\n %s  %s  via %s\n' % (status.author.screen_name, status.created_at, status.source)
+        print "%s\t%s\t%s\t%s" % (status.author.screen_name, status.created_at, status.user.id, status.text)
     except:
       # Catch any unicode errors while printing to console
       # and just ignore them to avoid breaking application.
@@ -69,17 +93,18 @@ def _my_read_loop(self, resp):
         self.on_closed(resp)
 
 
-consumer_key = __assert_environ('TW_CONSUMER_KEY')
-consumer_secret = __assert_environ('TW_CONSUMER_SECRET')
-auth_token = __assert_environ('TW_AUTH_TOKEN')
-auth_secret = __assert_environ('TW_AUTH_SECRET')
+def load_twitter():
+  consumer_key = __assert_environ('TW_CONSUMER_KEY')
+  consumer_secret = __assert_environ('TW_CONSUMER_SECRET')
+  auth_token = __assert_environ('TW_AUTH_TOKEN')
+  auth_secret = __assert_environ('TW_AUTH_SECRET')
 
-auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(auth_token, auth_secret)
+  auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+  auth.set_access_token(auth_token, auth_secret)
 
-listener = TweetListener()
+  listener = TweetListener()
 
-s = tweepy.Stream(auth,  listener, timeout = None)
-setattr(s, "_read_loop", types.MethodType(_my_read_loop, s))
-s.sample()
+  s = tweepy.Stream(auth,  listener, timeout = None)
+  setattr(s, "_read_loop", types.MethodType(_my_read_loop, s))
+  s.sample()
 

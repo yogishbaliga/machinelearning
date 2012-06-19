@@ -51,14 +51,21 @@ def sim_pearson(perfs, x1, x2):
   pSum = 0
   n = 0
 
-  for item in perfs[x1]:
-   if item in perfs[x2]:
-      n = n + 1
+  # find union of all keys
+  items = list(set(perfs[x1]).union(set(perfs[x2])))
+  for item in items:
+    n = n + 1
+    p1 = 0.0
+    p2 = 0.0
+    if item in perfs[x1]:
       sum1 += perfs[x1][item]
       sum1_sq += pow(perfs[x1][item], 2)
-      pSum += perfs[x1][item] * perfs[x2][item] 
+      p1 = perfs[x1][item]
+    if item in perfs[x2]:
       sum2 += perfs[x2][item]
       sum2_sq += pow(perfs[x2][item], 2)
+      p2 = perfs[x2][item]
+    pSum += (p1 * p2)
 
   if n == 0: return 0
 
